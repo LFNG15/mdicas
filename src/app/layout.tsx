@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Playfair_Display, Lora, DM_Sans } from "next/font/google";
 import "./globals.css";
 import CookieBanner from "@/components/CookieBanner";
+import BottomNav from "@/components/BottomNav";
 import { SITE } from "@/lib/seo/site";
 
 const playfair = Playfair_Display({
@@ -82,6 +83,8 @@ export const viewport: Viewport = {
   themeColor: SITE.themeColor,
   width: "device-width",
   initialScale: 1,
+  maximumScale: 5,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -125,6 +128,7 @@ export default function RootLayout({
       </head>
       <body>
         {children}
+        <BottomNav />
         <CookieBanner />
       </body>
     </html>
