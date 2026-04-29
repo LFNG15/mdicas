@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="12" fill="#FAF3EF"/>
+  <text x="50%" y="50%"
+        text-anchor="middle"
+        dominant-baseline="central"
+        font-family="Georgia, 'Playfair Display', serif"
+        font-weight="700"
+        font-size="26"
+        fill="#F07B6E"
+        letter-spacing="0.5">M|D</text>
+</svg>
