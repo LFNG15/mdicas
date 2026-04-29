@@ -774,3 +774,232 @@ section{padding:6rem 2rem}
   .cookie-banner-inner{flex-wrap:wrap}
   .cookie-banner-btn{width:100%;text-align:center;padding:0.7rem}
 }
+
+/* ─────────────────────────────────────────────
+   MOBILE APP-LIKE EXPERIENCE
+   Tudo abaixo afeta APENAS telas <= 768px.
+   Desktop e tablet largo permanecem inalterados.
+   ───────────────────────────────────────────── */
+
+/* Bottom navigation: shown by default, hidden on desktop only */
+.bottom-nav{
+  display:flex;
+  position:fixed;left:0;right:0;bottom:0;
+  z-index:1000;
+  background:rgba(255,251,248,0.96);
+  -webkit-backdrop-filter:blur(20px);
+  backdrop-filter:blur(20px);
+  border-top:1px solid var(--divider);
+  box-shadow:0 -2px 24px rgba(44,24,16,0.06);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.bottom-nav-item{
+  flex:1;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:.2rem;
+  padding:.5rem .25rem .55rem;
+  text-decoration:none;
+  color:var(--text-light);
+  font-size:.66rem;
+  letter-spacing:.02em;
+  font-weight:500;
+  min-height:60px;
+  position:relative;
+  transition:color .15s ease,background .15s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.bottom-nav-item span{line-height:1}
+.bottom-nav-item.active{color:var(--coral);font-weight:600}
+.bottom-nav-item.active::before{
+  content:'';
+  position:absolute;top:0;left:30%;right:30%;
+  height:2.5px;background:var(--coral);
+  border-radius:0 0 4px 4px;
+}
+.bottom-nav-item:active{background:rgba(240,123,110,0.08)}
+.bottom-nav-item svg{width:22px;height:22px;display:block}
+
+@media(min-width:769px){
+  .bottom-nav{display:none}
+}
+
+@media(max-width:768px){
+  /* ── Baseline app-like ── */
+  html,body{
+    -webkit-text-size-adjust:100%;
+    text-size-adjust:100%;
+    -webkit-tap-highlight-color:transparent;
+  }
+  body{
+    padding-bottom:calc(64px + env(safe-area-inset-bottom));
+    overscroll-behavior-y:contain;
+  }
+  /* Remove granulado em telas pequenas: distrai e gasta GPU */
+  body::after{display:none}
+
+  /* Permite tocar elementos sem o highlight cinza padrão do mobile */
+  a,button,[role="button"]{-webkit-tap-highlight-color:transparent}
+
+  /* ── Top bar: compacto, padrão Material 56dp ── */
+  .navbar{padding-top:env(safe-area-inset-top)}
+  .nav-inner{height:56px;padding:0 1rem}
+  .nav-logo-letters{font-size:1.5rem}
+  .nav-logo-letters .divider-line{height:24px}
+  .nav-search{width:40px;height:40px}
+  /* Bottom nav substitui o hamburger */
+  .hamburger{display:none}
+  .nav-links,.nav-links.open{display:none !important}
+
+  /* ── Hero ── */
+  .hero{
+    min-height:auto;padding:78px 1.2rem 36px;
+    align-items:flex-start;
+  }
+  .hero-tag{margin-bottom:1rem}
+  .hero-title{margin-bottom:1rem}
+  .hero-desc{font-size:1rem;line-height:1.7;margin-bottom:1.6rem}
+  .hero-actions{gap:.7rem;width:100%;flex-direction:column}
+  .hero-actions .btn-primary,
+  .hero-actions .btn-outline{width:100%}
+  .hero-card{animation:none;border-radius:18px;max-width:100%}
+  .hero-card-img{height:200px}
+  .hero-card-body{padding:1.4rem 1.4rem 1.6rem}
+  .hero-card-title{font-size:1.15rem}
+  .hero-float-badge{display:none}
+
+  /* ── Sections ── */
+  section{padding:2.6rem 1.2rem}
+  .section-header{margin-bottom:2rem}
+  .section-title{font-size:1.65rem;line-height:1.2}
+  .section-subtitle{font-size:.92rem;line-height:1.6}
+
+  /* ── Botões: alvo de toque mínimo 48dp (Material) ── */
+  .btn-primary,.btn-outline{
+    padding:.95rem 1.6rem;
+    font-size:.85rem;
+    min-height:48px;
+    display:inline-flex;align-items:center;justify-content:center;
+    border-radius:60px;
+  }
+
+  /* ── Cards: anula hover (não funciona em touch), adiciona feedback ── */
+  .blog-card,.feat-card,.lista-card,.cat-card,.grupo-card,
+  .tip-card,.feat-main,.ig-card,.hero-card,
+  .lista-item-link,.listas-page-item,
+  .article-footer-nav a{
+    -webkit-tap-highlight-color:transparent;
+    transition:transform .12s ease,box-shadow .2s ease,background .2s ease;
+  }
+  .blog-card:hover,.feat-card:hover,.lista-card:hover,.cat-card:hover,
+  .grupo-card:hover,.tip-card:hover,.feat-main:hover,.ig-card:hover,
+  .hero-card:hover,.article-footer-nav a:hover{
+    transform:none;box-shadow:0 1px 3px rgba(44,24,16,0.05);
+  }
+  .blog-card:active,.feat-card:active,.lista-card:active,.cat-card:active,
+  .grupo-card:active,.tip-card:active,.feat-main:active,.ig-card:active,
+  .hero-card:active,.lista-item-link:active,.listas-page-item:active,
+  .article-footer-nav a:active{
+    transform:scale(0.98);
+  }
+  .blog-card-img .bg{transition:none}
+  .blog-card:hover .blog-card-img .bg{transform:none}
+
+  /* ── Categorias ── */
+  .cat-grid{gap:.85rem}
+  .cat-card{padding:1.8rem 1rem;border-radius:14px}
+  .cat-icon{width:52px;height:52px;margin-bottom:.9rem}
+  .cat-name{font-size:1rem}
+
+  /* ── Featured ── */
+  .feat-main{min-height:300px;border-radius:18px}
+  .feat-main-content{padding:1.6rem}
+  .feat-main-content h3{font-size:1.35rem}
+  .feat-card{padding:1.4rem;border-radius:14px}
+
+  /* ── Blog grid ── */
+  .blog-card{border-radius:14px}
+  .blog-card-img{height:180px}
+  .blog-card-body{padding:1.2rem 1.4rem 1.4rem}
+  .blog-card-body h4{font-size:1.05rem}
+  .blog-card-footer{padding:0 1.4rem 1.2rem}
+  .blog-card-footer .read-more{opacity:1}
+
+  /* ── Listas (home) ── */
+  .lista-card{border-radius:16px}
+  .lista-card-header{padding:1.2rem 1.2rem .9rem;gap:.6rem}
+  .lista-item-link{padding:1rem 1.2rem;min-height:64px;gap:1rem}
+  .lista-item-img{width:48px;height:48px}
+  .lista-item-arrow{opacity:1;font-size:1rem}
+  .listas-aviso{padding:.85rem 1rem;font-size:.78rem;border-radius:12px}
+
+  /* ── Sobre mim ── */
+  .sobre-mim-inner{gap:2rem}
+  .sobre-mim-foto{width:180px;height:180px}
+  .sobre-mim-img{width:180px !important;height:180px !important}
+  .sobre-mim-lista li{font-size:.98rem}
+  .sobre-mim-desc{font-size:.9rem}
+
+  /* ── Tips ── */
+  .tip-card{padding:1.4rem;gap:1rem;border-radius:14px}
+  .tip-number{font-size:2rem;min-width:auto}
+
+  /* ── Grupos ── */
+  .grupo-card{padding:1.1rem 1.2rem;border-radius:14px}
+  .grupo-card-icon{width:46px;height:46px;border-radius:12px}
+
+  /* ── Instagram ── */
+  .ig-card-overlay,.ig-card-caption{
+    /* No mobile o hover não dispara — mostra um leve gradiente sempre */
+    background:linear-gradient(to bottom,transparent 60%,rgba(0,0,0,0.25) 100%);
+  }
+  .ig-card-overlay svg{display:none}
+  .ig-card:active{transform:scale(0.97)}
+
+  /* ── Newsletter / footer ── */
+  .footer{padding-bottom:2rem}
+  .footer h5{margin-bottom:.9rem}
+  .footer-bottom{font-size:.75rem}
+
+  /* ── Cookie banner: acima do bottom nav ── */
+  .cookie-banner{
+    bottom:calc(72px + env(safe-area-inset-bottom));
+    left:.6rem;right:.6rem;width:auto;max-width:none;
+    border-radius:14px;
+    transform:none;
+  }
+  .cookie-banner-inner{padding:.9rem 1rem;gap:.8rem}
+  .cookie-banner-text{font-size:.78rem;flex:1 1 100%}
+
+  /* ── Página de artigo ── */
+  .article-hero{padding:78px 1.2rem 28px}
+  .article-hero h1{font-size:1.7rem;line-height:1.25}
+  .article-hero .excerpt{font-size:.98rem;line-height:1.6}
+  .article-meta-bar{gap:.9rem 1.2rem;padding-top:1rem}
+  .article-meta-bar span{font-size:.78rem}
+  .article-body{padding:1.5rem 1.2rem 2rem}
+  .article-body p{font-size:1rem;line-height:1.8}
+  .article-body p:first-child{font-size:1.05rem}
+  .article-body h2{font-size:1.3rem;margin:2rem 0 .8rem}
+  .article-footer-nav{padding:0 1.2rem 2rem;gap:1rem}
+  .article-footer-nav a{padding:1.2rem;border-radius:14px}
+
+  /* ── Página /listas ── */
+  .listas-page-card{border-radius:16px}
+  .listas-page-item-name{font-size:.9rem}
+  .listas-page-item-btn{font-size:.8rem;padding-top:.6rem}
+
+  /* ── FadeUp: respeitar prefers-reduced-motion já é cuidado dentro do componente; aqui só evitamos saltos longos */
+  .fade-up{transform:translateY(16px)}
+}
+
+/* ─── Animação reduzida quando o usuário pediu ─── */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;
+    scroll-behavior:auto !important;
+  }
+  .fade-up{opacity:1;transform:none}
+}
