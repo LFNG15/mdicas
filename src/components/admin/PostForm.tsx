@@ -12,23 +12,6 @@ const GRADIENTS = [
   { label: 'Claro → Creme', value: 'linear-gradient(135deg, #F5A49B 0%, #FAF3EF 100%)' },
 ];
 
-// Converts Portable Text blocks to HTML for the textarea editor
-function portableTextToHtml(content: any[] | string): string {
-  if (typeof content === 'string') return content;
-  if (!Array.isArray(content)) return '';
-  return content.map((block: any) => {
-    if (block._type !== 'block') return '';
-    const text = (block.children ?? []).map((span: any) => span.text ?? '').join('');
-    switch (block.style) {
-      case 'h2': return `<h2>${text}</h2>`;
-      case 'h3': return `<h3>${text}</h3>`;
-      case 'h4': return `<h4>${text}</h4>`;
-      case 'blockquote': return `<blockquote>${text}</blockquote>`;
-      default: return `<p>${text}</p>`;
-    }
-  }).filter(Boolean).join('\n');
-}
-
 const empty: Post = {
   slug: '',
   title: '',
@@ -90,10 +73,7 @@ interface Props {
 
 export default function PostForm({ initial, onSubmit, submitLabel = 'Publicar Artigo', saving }: Props) {
   const router = useRouter();
-  const [form, setForm] = useState<Post>({
-    ...(initial ?? empty),
-    content: initial ? portableTextToHtml(initial.content) : '',
-  });
+  const [form, setForm] = useState<Post>(initial ?? empty);
   const [slugEdited, setSlugEdited] = useState(!!initial);
   const [error, setError] = useState('');
 

@@ -1,31 +1,25 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 import Link from "next/link";
-import { createClient } from "@/utils/supabase/client";
+import { signIn } from "./actions";
 
 export default function Login() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [pending, startTransition] = useTransition();
+  const loading = pending;
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError("");
-
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-
-    if (error) {
-      setError("Email ou senha incorretos.");
-      setLoading(false);
-    } else {
-      router.push("/admin");
-      router.refresh();
-    }
+    const fd = new FormData();
+    fd.set("email", email);
+    fd.set("password", password);
+    startTransition(async () => {
+      const res = await signIn(fd);
+      if (res?.error) setError(res.error);
+    });
   };
 
   return (

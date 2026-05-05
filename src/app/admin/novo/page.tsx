@@ -1,7 +1,7 @@
 'use client';
 import PostForm from '@/components/admin/PostForm';
 import { useAdminPosts } from '@/hooks/useAdminPosts';
-import type { Post as SanityPost } from '@/lib/supabase/types';
+import type { Post } from '@/lib/supabase/types';
 
 export default function NovoArtigo() {
   const { createPost, saving } = useAdminPosts();
@@ -36,7 +36,7 @@ export default function NovoArtigo() {
         padding: '2.5rem',
       }}>
         <PostForm
-          onSubmit={(post: SanityPost) => createPost(post)}
+          onSubmit={(post: Post) => createPost(post)}
           submitLabel="Publicar Artigo"
           saving={saving}
         />

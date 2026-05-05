@@ -51,7 +51,3 @@ yarn-error.log*
 # OS
 .DS_Store
 Thumbs.db
-
-# sanity
-.sanity/
-sanity/dist/

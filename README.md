@@ -1,12 +1,11 @@
 # mdicas
 
-Blog em Next.js 14 (App Router) com painel administrativo, autenticação via Supabase e CMS opcional via Sanity.
+Blog em Next.js 14 (App Router) com painel administrativo e autenticação via Supabase.
 
 ## Stack
 
 - **Next.js 14** (App Router, Server Components)
 - **Supabase** — Auth + Postgres (posts, listas de compras, grupos de ofertas, instagram)
-- **Sanity** — CMS opcional para conteúdo estruturado
 - **TipTap** — editor rich-text no painel admin
 - **TypeScript** + Tailwind via `globals.css`
 
@@ -64,7 +63,6 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```bash
 npm install
 npm run dev          # http://localhost:3000
-npm run studio       # Sanity Studio (opcional)
 ```
 
 ## Deploy (Vercel)

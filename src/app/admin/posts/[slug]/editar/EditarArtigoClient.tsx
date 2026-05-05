@@ -1,7 +1,7 @@
 'use client';
 import PostForm from '@/components/admin/PostForm';
 import { useAdminPosts } from '@/hooks/useAdminPosts';
-import type { Post as SanityPost } from '@/lib/supabase/types';
+import type { Post } from '@/lib/supabase/types';
 
 export default function EditarArtigoClient({ slug }: { slug: string }) {
   const { allPosts, updatePost, loaded, saving } = useAdminPosts();
@@ -57,7 +57,7 @@ export default function EditarArtigoClient({ slug }: { slug: string }) {
       }}>
         <PostForm
           initial={post}
-          onSubmit={(updated: SanityPost) => updatePost(updated)}
+          onSubmit={(updated: Post) => updatePost(updated)}
           submitLabel="Salvar Alterações"
           saving={saving}
         />
