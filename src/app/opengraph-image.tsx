@@ -8,7 +8,6 @@ export const contentType = "image/png";
 
 const CORAL = "#F07B6E";
 const CORAL_DARK = "#D9685C";
-const CORAL_LIGHT = "#F5A49B";
 const CREAM = "#FAF3EF";
 const TEXT_DARK = "#2C1810";
 const TEXT_MID = "#5A3D2E";
@@ -73,7 +72,7 @@ export default async function Image() {
           <span>M</span>
           <span
             style={{
-              display: "inline-block",
+              display: "flex",
               width: 6,
               height: 180,
               background: CORAL,
@@ -100,7 +99,7 @@ export default async function Image() {
         >
           <span
             style={{
-              display: "inline-block",
+              display: "flex",
               width: 36,
               height: 2,
               background: CORAL,
@@ -109,7 +108,7 @@ export default async function Image() {
           Economia Inteligente
           <span
             style={{
-              display: "inline-block",
+              display: "flex",
               width: 36,
               height: 2,
               background: CORAL,
