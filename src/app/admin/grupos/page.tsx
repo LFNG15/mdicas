@@ -118,13 +118,14 @@ export default function AdminGrupos() {
 
         <form onSubmit={handleAdd}>
           {/* Seleção de plataforma */}
-          <div style={{ marginBottom: '1rem' }}>
-            <label style={lbl}>Plataforma <span style={{ color: 'var(--coral)' }}>*</span></label>
+          <div style={{ marginBottom: '1rem' }} role="group" aria-labelledby="grupo-plat-label">
+            <span id="grupo-plat-label" style={lbl}>Plataforma <span style={{ color: 'var(--coral)' }} aria-hidden="true">*</span></span>
             <div style={{ display: 'flex', gap: '0.75rem' }}>
               {PLATFORMS.map(p => (
                 <button
                   key={p.value}
                   type="button"
+                  aria-pressed={form.platform === p.value}
                   onClick={() => setForm(f => ({ ...f, platform: p.value }))}
                   style={{
                     display: 'flex', alignItems: 'center', gap: '0.5rem',
@@ -145,13 +146,13 @@ export default function AdminGrupos() {
 
           <div className="admin-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8rem' }}>
             <div>
-              <label style={lbl}>Nome do grupo <span style={{ color: 'var(--coral)' }}>*</span></label>
-              <input type="text" placeholder="Ex: Ofertas do Dia" value={form.name}
+              <label htmlFor="grupo-name" style={lbl}>Nome do grupo <span style={{ color: 'var(--coral)' }} aria-hidden="true">*</span></label>
+              <input id="grupo-name" type="text" required placeholder="Ex: Ofertas do Dia" value={form.name}
                 onChange={e => setForm(f => ({ ...f, name: e.target.value }))} style={inp} />
             </div>
             <div>
-              <label style={lbl}>Link do grupo <span style={{ color: 'var(--coral)' }}>*</span></label>
-              <input type="url"
+              <label htmlFor="grupo-url" style={lbl}>Link do grupo <span style={{ color: 'var(--coral)' }} aria-hidden="true">*</span></label>
+              <input id="grupo-url" type="url" required
                 placeholder={form.platform === 'whatsapp' ? 'https://chat.whatsapp.com/...' : 'https://t.me/...'}
                 value={form.url}
                 onChange={e => setForm(f => ({ ...f, url: e.target.value }))} style={inp} />

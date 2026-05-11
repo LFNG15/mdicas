@@ -1,8 +1,11 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Post } from '@/lib/supabase/types';
 import RichTextEditor from './RichTextEditor';
+
+const ACCEPT_IMAGE = 'image/jpeg,image/png,image/webp,image/avif';
+const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 
 const GRADIENTS = [
   { label: 'Coral → Escuro', value: 'linear-gradient(135deg, #F07B6E 0%, #D9685C 100%)' },
@@ -37,17 +40,20 @@ function toSlug(title: string) {
     .replace(/\s+/g, '-');
 }
 
-const labelStyle = (text: string, required?: boolean) => (
-  <label style={{
-    display: 'block',
-    fontSize: '0.75rem',
-    fontWeight: 600,
-    letterSpacing: '0.08em',
-    textTransform: 'uppercase' as const,
-    color: 'var(--text-mid)',
-    marginBottom: '0.4rem',
-  }}>
-    {text}{required && <span style={{ color: 'var(--coral)', marginLeft: 3 }}>*</span>}
+const labelStyle = (text: string, required?: boolean, htmlFor?: string) => (
+  <label
+    htmlFor={htmlFor}
+    style={{
+      display: 'block',
+      fontSize: '0.75rem',
+      fontWeight: 600,
+      letterSpacing: '0.08em',
+      textTransform: 'uppercase' as const,
+      color: 'var(--text-mid)',
+      marginBottom: '0.4rem',
+    }}>
+    {text}{required && <span style={{ color: 'var(--coral)', marginLeft: 3 }} aria-hidden="true">*</span>}
+    {required && <span className="visually-hidden"> (obrigatório)</span>}
   </label>
 );
 
@@ -76,6 +82,9 @@ export default function PostForm({ initial, onSubmit, submitLabel = 'Publicar Ar
   const [form, setForm] = useState<Post>(initial ?? empty);
   const [slugEdited, setSlugEdited] = useState(!!initial);
   const [error, setError] = useState('');
+  const [uploadState, setUploadState] = useState<'idle' | 'uploading' | 'error'>('idle');
+  const [uploadError, setUploadError] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!slugEdited && form.title) {
@@ -85,6 +94,33 @@ export default function PostForm({ initial, onSubmit, submitLabel = 'Publicar Ar
 
   const set = (key: keyof Post, val: string | boolean) =>
     setForm((f: Post) => ({ ...f, [key]: val }));
+
+  const handleCoverUpload = async (file: File) => {
+    setUploadError('');
+    if (file.size > MAX_UPLOAD_BYTES) {
+      setUploadState('error');
+      setUploadError(`Arquivo muito grande (limite ${MAX_UPLOAD_BYTES / 1024 / 1024} MB).`);
+      return;
+    }
+    setUploadState('uploading');
+    try {
+      const body = new FormData();
+      body.append('file', file);
+      const res = await fetch('/api/uploads/cover', { method: 'POST', body });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.error ?? `Falha (${res.status})`);
+      }
+      const { url } = (await res.json()) as { url: string };
+      set('coverImage', url);
+      setUploadState('idle');
+    } catch (e) {
+      setUploadState('error');
+      setUploadError(e instanceof Error ? e.message : 'Erro desconhecido');
+    } finally {
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
 
   const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -105,24 +141,32 @@ export default function PostForm({ initial, onSubmit, submitLabel = 'Publicar Ar
     key: keyof Post,
     labelText: string,
     opts?: { required?: boolean; placeholder?: string; hint?: string }
-  ) => (
-    <div style={{ marginBottom: '1.5rem' }}>
-      {labelStyle(labelText, opts?.required)}
-      {opts?.hint && (
-        <div style={{ fontSize: '0.75rem', color: 'var(--text-light)', marginBottom: '0.4rem' }}>{opts.hint}</div>
-      )}
-      <input
-        type="text"
-        value={form[key] as string}
-        placeholder={opts?.placeholder}
-        onChange={e => {
-          if (key === 'slug') setSlugEdited(true);
-          set(key, e.target.value);
-        }}
-        style={inputStyle}
-      />
-    </div>
-  );
+  ) => {
+    const fieldId = `post-${key}`;
+    const hintId = opts?.hint ? `${fieldId}-hint` : undefined;
+    return (
+      <div style={{ marginBottom: '1.5rem' }}>
+        {labelStyle(labelText, opts?.required, fieldId)}
+        {opts?.hint && (
+          <div id={hintId} style={{ fontSize: '0.75rem', color: 'var(--text-light)', marginBottom: '0.4rem' }}>{opts.hint}</div>
+        )}
+        <input
+          id={fieldId}
+          type="text"
+          value={(form[key] as string) ?? ''}
+          placeholder={opts?.placeholder}
+          required={opts?.required}
+          aria-describedby={hintId}
+          aria-required={opts?.required || undefined}
+          onChange={e => {
+            if (key === 'slug') setSlugEdited(true);
+            set(key, e.target.value);
+          }}
+          style={inputStyle}
+        />
+      </div>
+    );
+  };
 
   return (
     <form onSubmit={handleSubmit}>
@@ -200,6 +244,92 @@ export default function PostForm({ initial, onSubmit, submitLabel = 'Publicar Ar
           </div>
         </div>
         <div>{field('readTime', 'Tempo de leitura', { placeholder: 'Ex: 5 min de leitura' })}</div>
+      </div>
+
+      <div style={{ marginBottom: '1.5rem' }}>
+        {labelStyle('Imagem de capa (opcional)', false, 'post-coverImage')}
+        <div style={{ fontSize: '0.75rem', color: 'var(--text-light)', marginBottom: '0.6rem' }}>
+          Faça upload de uma imagem ou cole uma URL. Quando preenchida, substitui o gradiente no destaque principal. Recomendado: 1600×900px, até 5 MB (JPEG, PNG, WebP, AVIF).
+        </div>
+
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', flexWrap: 'wrap', marginBottom: '0.6rem' }}>
+          {form.coverImage && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={form.coverImage}
+              alt="Pré-visualização da capa"
+              style={{
+                width: 140, height: 80, objectFit: 'cover',
+                borderRadius: 10, border: '1px solid var(--divider)',
+                background: 'var(--cream)',
+              }}
+            />
+          )}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept={ACCEPT_IMAGE}
+              id="post-coverImage-file"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) handleCoverUpload(f);
+              }}
+              style={{ display: 'none' }}
+            />
+            <label
+              htmlFor="post-coverImage-file"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+                padding: '0.55rem 1.2rem',
+                background: uploadState === 'uploading' ? 'var(--text-light)' : 'var(--coral)',
+                color: 'var(--white)',
+                borderRadius: 60,
+                fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif",
+                fontSize: '0.78rem', fontWeight: 600, letterSpacing: '0.05em',
+                textTransform: 'uppercase' as const,
+                cursor: uploadState === 'uploading' ? 'wait' : 'pointer',
+              }}
+            >
+              {uploadState === 'uploading' ? 'Enviando...' : (form.coverImage ? 'Trocar imagem' : 'Enviar imagem')}
+            </label>
+            {form.coverImage && (
+              <button
+                type="button"
+                onClick={() => set('coverImage', '')}
+                style={{
+                  background: 'none', border: 'none', padding: '0.2rem 0.4rem',
+                  color: 'var(--text-light)', cursor: 'pointer',
+                  fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif",
+                  fontSize: '0.78rem', textDecoration: 'underline',
+                  width: 'fit-content',
+                }}
+              >
+                Remover capa
+              </button>
+            )}
+          </div>
+        </div>
+
+        {uploadError && (
+          <div role="alert" style={{
+            marginBottom: '0.5rem', padding: '0.6rem 0.9rem',
+            background: 'rgba(229,62,62,0.06)', border: '1px solid rgba(229,62,62,0.25)',
+            borderRadius: 8, color: '#b22424', fontSize: '0.82rem',
+          }}>
+            {uploadError}
+          </div>
+        )}
+
+        <input
+          id="post-coverImage"
+          type="url"
+          value={form.coverImage ?? ''}
+          placeholder="ou cole uma URL: https://exemplo.com/imagem.jpg"
+          onChange={e => set('coverImage', e.target.value)}
+          style={{ ...inputStyle, fontSize: '0.82rem' }}
+          aria-describedby="post-coverImage-hint"
+        />
       </div>
 
       <div style={{ marginBottom: '1.5rem' }}>

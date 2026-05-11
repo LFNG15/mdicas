@@ -112,22 +112,25 @@ export default function AdminInstagram() {
 
             {/* Link do post */}
             <div style={{ gridColumn: '1 / -1' }}>
-              <label style={labelStyle}>Link do post no Instagram <span style={{ color: 'var(--coral)' }}>*</span></label>
+              <label htmlFor="ig-url" style={labelStyle}>Link do post no Instagram <span style={{ color: 'var(--coral)' }} aria-hidden="true">*</span></label>
               <input
+                id="ig-url"
                 type="url"
+                required
                 placeholder="https://www.instagram.com/p/..."
                 value={form.url}
                 onChange={e => setForm(f => ({ ...f, url: e.target.value }))}
                 style={inputStyle}
+                aria-describedby="ig-url-hint"
               />
-              <div style={{ fontSize: '0.72rem', color: 'var(--text-light)', marginTop: '0.3rem' }}>
-                Abra o post no Instagram → clique nos 3 pontinhos → "Copiar link"
+              <div id="ig-url-hint" style={{ fontSize: '0.72rem', color: 'var(--text-light)', marginTop: '0.3rem' }}>
+                Abra o post no Instagram → clique nos 3 pontinhos → &ldquo;Copiar link&rdquo;
               </div>
             </div>
 
             {/* Upload da imagem */}
-            <div style={{ gridColumn: '1 / -1' }}>
-              <label style={labelStyle}>Imagem do post <span style={{ color: 'var(--coral)' }}>*</span></label>
+            <div style={{ gridColumn: '1 / -1' }} role="group" aria-labelledby="ig-img-label">
+              <span id="ig-img-label" style={labelStyle}>Imagem do post <span style={{ color: 'var(--coral)' }} aria-hidden="true">*</span></span>
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', flexWrap: 'wrap' }}>
 
                 {/* Drop zone */}
@@ -140,10 +143,11 @@ export default function AdminInstagram() {
                   transition: 'border-color 0.2s',
                 }}>
                   {imagePreview ? (
-                    <img src={imagePreview} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={imagePreview} alt="Pré-visualização da imagem selecionada" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   ) : (
                     <>
-                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="1.5">
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" strokeWidth="1.5" aria-hidden="true" focusable="false">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                         <polyline points="17 8 12 3 7 8"/>
                         <line x1="12" y1="3" x2="12" y2="15"/>
@@ -155,6 +159,7 @@ export default function AdminInstagram() {
                     ref={fileInputRef}
                     type="file"
                     accept="image/*"
+                    aria-label="Selecionar imagem do post"
                     onChange={handleFileChange}
                     style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', width: '100%', height: '100%' }}
                   />
@@ -165,7 +170,7 @@ export default function AdminInstagram() {
                     Salve a foto do post direto do Instagram no seu dispositivo e selecione ela aqui.
                   </p>
                   <p style={{ fontSize: '0.78rem', color: 'var(--text-light)', marginTop: '0.5rem' }}>
-                    No Instagram: toque nos 3 pontinhos do post → "Salvar" ou tire um screenshot.
+                    No Instagram: toque nos 3 pontinhos do post → &ldquo;Salvar&rdquo; ou tire um screenshot.
                   </p>
                   {imageFile && (
                     <div style={{ marginTop: '0.6rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -182,8 +187,9 @@ export default function AdminInstagram() {
 
             {/* Legenda */}
             <div style={{ gridColumn: '1 / -1' }}>
-              <label style={labelStyle}>Legenda <span style={{ fontSize: '0.7em', fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>(opcional)</span></label>
+              <label htmlFor="ig-caption" style={labelStyle}>Legenda <span style={{ fontSize: '0.7em', fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>(opcional)</span></label>
               <input
+                id="ig-caption"
                 type="text"
                 placeholder="Breve descrição do post..."
                 value={form.caption}

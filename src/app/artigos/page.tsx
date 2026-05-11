@@ -1,6 +1,7 @@
+import { Suspense } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Newsletter from "@/components/Newsletter";
+import SobreMim from "@/components/SobreMim";
 import FadeUp from "@/components/FadeUp";
 import { getAllPosts, getTotalPostCount, getCategoryCounts } from "@/lib/supabase/queries";
 import ArtigosClient from "./ArtigosClient";
@@ -29,6 +30,7 @@ export default async function Artigos() {
   return (
     <>
       <Navbar />
+      <main id="main" tabIndex={-1}>
 
       <section
         style={{
@@ -80,9 +82,12 @@ export default async function Artigos() {
         </FadeUp>
       </section>
 
-      <ArtigosClient posts={posts} categoryCounts={categoryCounts} />
+      <Suspense fallback={null}>
+        <ArtigosClient posts={posts} categoryCounts={categoryCounts} />
+      </Suspense>
 
-      <Newsletter />
+      <SobreMim />
+      </main>
       <Footer />
     </>
   );

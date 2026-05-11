@@ -1,7 +1,8 @@
 import Link from "next/link";
+import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Newsletter from "@/components/Newsletter";
+import SobreMim from "@/components/SobreMim";
 import FadeUp from "@/components/FadeUp";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import { categoryIcons } from "@/data/posts";
@@ -38,35 +39,41 @@ export default async function Home() {
   return (
     <>
       <Navbar />
+      <main id="main" tabIndex={-1}>
 
       {/* HERO */}
       <section className="hero" id="home">
         <div className="hero-inner">
           <FadeUp>
-            <div className="hero-tag">Bem-vindo ao MD</div>
+            <div className="hero-tag">Economia Inteligente</div>
             <h1 className="hero-title">
-              Descubra, Leia &<br />
-              <em>Inspire-se</em>
+              Qualidade que cabe<br />
+              <em>no seu bolso.</em>
             </h1>
             <p className="hero-desc">
-              Seu espaço editorial de artigos envolventes, dicas inteligentes de
-              compras e conteúdos que transformam a forma como você vê o mundo.
+              Reúno em um só lugar os melhores achados da Amazon, ofertas
+              exclusivas nos grupos e dicas práticas para você comprar bem
+              pagando pouco.
             </p>
             <div className="hero-actions">
-              <Link href="#artigos" className="btn-primary">
-                Explorar Artigos
+              <Link href="/listas" className="btn-primary">
+                Ver Listas de Compra
               </Link>
-              <Link href="/artigos" className="btn-outline">
-                Ver Todos
+              <Link href="/#grupos" className="btn-outline">
+                Receber Ofertas
               </Link>
             </div>
           </FadeUp>
 
           {mainFeatured && (
             <FadeUp delay={0.2} className="hero-visual">
-              <Link href={`/artigo/${mainFeatured.slug}`} className="hero-card">
-                <div className="hero-card-img" style={{ background: mainFeatured.gradient }}>
-                  <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <Link
+                href={`/artigo/${mainFeatured.slug}`}
+                className="hero-card"
+                aria-label={`Ler artigo em destaque: ${mainFeatured.title}`}
+              >
+                <div className="hero-card-img" style={{ background: mainFeatured.gradient }} aria-hidden="true">
+                  <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
                     <path d="M15 60V20c0-2 1-3 3-3h10c2 0 3 1 3 3v5c0 1 1 2 2 2h4c1 0 2-1 2-2v-5c0-2 1-3 3-3h10c2 0 3 1 3 3v40" stroke="rgba(255,255,255,0.7)" strokeWidth="2" fill="none"/>
                     <path d="M10 60h60" stroke="rgba(255,255,255,0.7)" strokeWidth="2"/>
                     <rect x="22" y="28" width="8" height="6" rx="1" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" fill="none"/>
@@ -101,8 +108,9 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* CATEGORIES — contagens reais do banco */}
-      {categoryCounts.length > 0 && (
+      {/* CATEGORIES — só faz sentido com diversidade real (> 3 categorias).
+          O foco do site é afiliados (Listas, Grupos, Instagram); artigos são secundários. */}
+      {categoryCounts.length > 3 && (
         <section className="categories" id="categorias">
           <FadeUp>
             <div className="section-header">
@@ -135,8 +143,9 @@ export default async function Home() {
         </section>
       )}
 
-      {/* FEATURED ARTICLES */}
-      {mainFeatured && (
+      {/* FEATURED ARTICLES — só renderiza se houver acervo (> 3 artigos publicados).
+          Abaixo disso, o Hero já cumpre o papel de vitrine sem soar prematuro. */}
+      {mainFeatured && totalPosts > 3 && (
         <section className="featured" id="artigos">
           <FadeUp>
             <div className="section-header">
@@ -153,8 +162,19 @@ export default async function Home() {
                 href={`/artigo/${mainFeatured.slug}`}
                 className="feat-main"
                 style={{ background: mainFeatured.gradient }}
+                aria-label={`Artigo em destaque: ${mainFeatured.title}`}
               >
-                <div className="feat-main-overlay"></div>
+                {mainFeatured.coverImage && (
+                  <Image
+                    src={mainFeatured.coverImage}
+                    alt=""
+                    fill
+                    priority
+                    sizes="(max-width: 1024px) 100vw, 60vw"
+                    className="feat-main-image"
+                  />
+                )}
+                <div className="feat-main-overlay" aria-hidden="true"></div>
                 <div className="feat-main-content">
                   <span className="tag">{mainFeatured.tag}</span>
                   <h3>{mainFeatured.title}</h3>
@@ -226,8 +246,19 @@ export default async function Home() {
             {blogPosts.map((post, i) => (
               <FadeUp key={post.slug} delay={i * 0.1}>
                 <Link href={`/artigo/${post.slug}`} className="blog-card">
-                  <div className="blog-card-img">
-                    <div className="bg" style={{ background: post.gradient }}></div>
+                  <div className="blog-card-img" style={!post.coverImage ? { background: post.gradient } : undefined}>
+                    {post.coverImage ? (
+                      <Image
+                        src={post.coverImage}
+                        alt=""
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1280px) 33vw, 400px"
+                        className="bg"
+                        style={{ objectFit: "cover" }}
+                      />
+                    ) : (
+                      <div className="bg" style={{ background: post.gradient }}></div>
+                    )}
                   </div>
                   <div className="blog-card-body">
                     <span className="tag">{post.tag}</span>
@@ -254,7 +285,8 @@ export default async function Home() {
 
       <GruposOfertas grupos={gruposOfertas} />
       <InstagramFeed posts={instagramPosts} />
-      <Newsletter />
+      <SobreMim />
+      </main>
       <Footer />
     </>
   );

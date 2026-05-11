@@ -1,7 +1,6 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
-import { createClient } from '@/utils/supabase/client';
-import { rowToPost, type Post, type PostRow } from '@/lib/supabase/types';
+import type { Post } from '@/lib/supabase/types';
 
 export type { Post };
 
@@ -12,18 +11,15 @@ export function useAdminPosts() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchPosts = useCallback(async () => {
-    const supabase = createClient();
-    const { data, error } = await supabase
-      .from('posts')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      setError('Erro ao carregar artigos: ' + error.message);
-    } else {
-      setAllPosts((data as PostRow[]).map(rowToPost));
+    try {
+      const res = await fetch('/api/posts');
+      if (!res.ok) throw new Error((await res.json()).error ?? 'Erro ao carregar artigos');
+      setAllPosts(await res.json());
+    } catch (e: any) {
+      setError('Erro ao carregar artigos: ' + e.message);
+    } finally {
+      setLoaded(true);
     }
-    setLoaded(true);
   }, []);
 
   useEffect(() => { fetchPosts(); }, [fetchPosts]);

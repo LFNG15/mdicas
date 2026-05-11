@@ -13,6 +13,7 @@ export interface PostRow {
   gradient: string;
   featured: boolean;
   featured_main: boolean;
+  cover_image_url?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -32,6 +33,7 @@ export interface Post {
   gradient: string;
   featured: boolean;
   featuredMain: boolean;
+  coverImage?: string | null;
 }
 
 export function rowToPost(row: PostRow): Post {
@@ -49,6 +51,7 @@ export function rowToPost(row: PostRow): Post {
     gradient: row.gradient,
     featured: row.featured,
     featuredMain: row.featured_main,
+    coverImage: row.cover_image_url ?? null,
   };
 }
 
@@ -66,5 +69,6 @@ export function postToRow(post: Post): Omit<PostRow, "id" | "created_at" | "upda
     gradient: post.gradient,
     featured: post.featured,
     featured_main: post.featuredMain,
+    cover_image_url: post.coverImage ?? null,
   };
 }

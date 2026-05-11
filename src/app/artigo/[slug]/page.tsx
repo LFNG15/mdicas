@@ -1,13 +1,16 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Newsletter from "@/components/Newsletter";
+import SobreMim from "@/components/SobreMim";
 import { getAllSlugs, getPostBySlug, getAllPosts } from "@/lib/supabase/queries";
 import type { Post } from "@/lib/supabase/types";
 import { sanitizeHtml } from "@/lib/security/sanitize";
 import { SITE } from "@/lib/seo/site";
+
+export const revalidate = 60;
 
 export async function generateStaticParams() {
   const slugs = await getAllSlugs();
@@ -20,6 +23,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 
   const url = `/artigo/${post.slug}`;
   const publishedTime = /^\d{4}-\d{2}-\d{2}/.test(post.date) ? post.date : undefined;
+  const ogImage = post.coverImage || SITE.ogImage;
 
   return {
     title: post.title,
@@ -35,13 +39,13 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       publishedTime,
       authors: [post.author],
       tags: [post.category, post.tag].filter(Boolean),
-      images: [{ url: SITE.ogImage, width: 1200, height: 630, alt: post.title }],
+      images: [{ url: ogImage, width: 1200, height: 630, alt: post.title }],
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.excerpt,
-      images: [SITE.ogImage],
+      images: [ogImage],
     },
   };
 }
@@ -66,7 +70,7 @@ export default async function ArtigoPage({ params }: { params: { slug: string } 
     "@type": "BlogPosting",
     headline: post.title,
     description: post.excerpt,
-    image: `${SITE.url}${SITE.ogImage}`,
+    image: post.coverImage || `${SITE.url}${SITE.ogImage}`,
     inLanguage: SITE.language,
     author: { "@type": "Person", name: post.author },
     publisher: {
@@ -102,6 +106,8 @@ export default async function ArtigoPage({ params }: { params: { slug: string } 
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <Navbar />
+      <main id="main" tabIndex={-1}>
+      <article>
 
       <div className="article-hero">
         <div className="article-hero-inner">
@@ -113,17 +119,31 @@ export default async function ArtigoPage({ params }: { params: { slug: string } 
           <p className="excerpt">{post.excerpt}</p>
           <div className="article-meta-bar">
             <span className="author">{post.author}</span>
-            <span>•</span>
+            <span aria-hidden="true">•</span>
             <span>{
               post.date && /^\d{4}-\d{2}-\d{2}$/.test(post.date)
                 ? new Date(post.date + 'T12:00:00').toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
                 : post.date
             }</span>
-            <span>•</span>
+            <span aria-hidden="true">•</span>
             <span>{post.readTime}</span>
           </div>
         </div>
       </div>
+
+      {post.coverImage && (
+        <figure className="article-cover">
+          <Image
+            src={post.coverImage}
+            alt={`Imagem de capa do artigo: ${post.title}`}
+            width={1600}
+            height={900}
+            priority
+            sizes="(max-width: 768px) 100vw, 760px"
+            className="article-cover-img"
+          />
+        </figure>
+      )}
 
       <div className="article-body">
         <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }} />
@@ -150,7 +170,9 @@ export default async function ArtigoPage({ params }: { params: { slug: string } 
         </div>
       )}
 
-      <Newsletter />
+      </article>
+      <SobreMim />
+      </main>
       <Footer />
     </>
   );

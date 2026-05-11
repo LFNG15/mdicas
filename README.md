@@ -40,37 +40,39 @@ Copie `.env.example` para `.env.local` e preencha:
 | `NEXT_PUBLIC_SUPABASE_URL` | URL do projeto Supabase. |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Anon key (pública, RLS aplica). |
 | `SUPABASE_SERVICE_ROLE_KEY` | Service role (servidor apenas, bypassa RLS). |
-| `BASIC_AUTH_SECRET` | Ativa o gate de acesso restrito. Em branco = site público. |
 | `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | Token do Google Search Console (opcional). |
 | `NEXT_PUBLIC_BING_SITE_VERIFICATION` | Token do Bing Webmaster (opcional). |
 | `NEXT_PUBLIC_YANDEX_VERIFICATION` | Token do Yandex Webmaster (opcional). |
 
-## Acesso restrito por Basic Auth
+## Migrações de banco
 
-Quando `BASIC_AUTH_SECRET` está definido, o site inteiro fica atrás de um popup de Basic Auth do navegador. As credenciais são validadas contra os usuários do **Supabase Auth** — basta cadastrar o e-mail/senha do tester em Authentication → Users.
+Os arquivos em `migrations/` precisam ser aplicados manualmente no Supabase
+(Dashboard → SQL Editor → cole o conteúdo → Run). Aplique na ordem numérica:
 
-- Após o primeiro login válido, o middleware emite um cookie HMAC-SHA256 (`bauth`) com TTL de 8h, evitando uma chamada ao Supabase por request.
-- Para liberar o site ao público: apague o valor de `BASIC_AUTH_SECRET` no provedor (Vercel etc.) e refaça o deploy. Sem mudança de código.
-- Para invalidar todos os acessos: troque o `BASIC_AUTH_SECRET` — todos os cookies emitidos viram inválidos imediatamente.
+| Arquivo | O que faz |
+|---|---|
+| `0001_add_post_cover_image.sql` | Adiciona coluna `cover_image_url` em `posts` (imagem de capa opcional do destaque principal). |
+| `0002_post_covers_bucket.sql` | Cria o bucket `post-covers` no Storage com leitura pública e policies de escrita restritas a usuários autenticados. |
 
-Gerar um secret forte:
-```bash
-node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-```
+> Sem `0002`, o upload de capa via admin retornará 500. Sem `0001`, o campo
+> aparece no formulário mas não persiste.
 
 ## Desenvolvimento
 
 ```bash
 npm install
 npm run dev          # http://localhost:3000
+npm run typecheck    # verifica tipos
+npm run lint         # lint + acessibilidade (jsx-a11y)
+npm run lint:a11y    # apenas regras de a11y, modo silencioso
+npm test             # testes unitários (DTOs, validadores, sanitizer)
 ```
 
 ## Deploy (Vercel)
 
 1. Importe o repo na Vercel.
 2. Em **Settings → Environment Variables**, configure as variáveis acima nos 3 ambientes (Production / Preview / Development).
-3. Use o mesmo `BASIC_AUTH_SECRET` em todos os ambientes — caso contrário cookies emitidos no preview não funcionam em produção.
-4. Deploy.
+3. Deploy.
 
 ## Build local
 

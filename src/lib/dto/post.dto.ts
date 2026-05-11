@@ -1,4 +1,4 @@
-import { sanitizeHtml } from "@/lib/security/sanitize";
+import { sanitizeHtml, safeUrlOrNull } from "@/lib/security/sanitize";
 import { asTrimmedString, isValidSlug, asBool } from "@/lib/security/validators";
 
 export interface PostInput {
@@ -14,6 +14,7 @@ export interface PostInput {
   gradient: string;
   featured: boolean;
   featuredMain: boolean;
+  coverImage: string | null;
 }
 
 export type PostParseResult =
@@ -55,6 +56,12 @@ export function parsePostInput(raw: unknown): PostParseResult {
   const gradient = asTrimmedString(r.gradient, 300);
   if (!gradient) return { ok: false, error: "Gradiente inválido" };
 
+  const rawCover = typeof r.coverImage === "string" ? r.coverImage.trim() : "";
+  const coverImage = rawCover.length > 0 ? safeUrlOrNull(rawCover) : null;
+  if (rawCover.length > 0 && !coverImage) {
+    return { ok: false, error: "URL da imagem de capa inválida" };
+  }
+
   return {
     ok: true,
     value: {
@@ -70,6 +77,7 @@ export function parsePostInput(raw: unknown): PostParseResult {
       gradient,
       featured: asBool(r.featured),
       featuredMain: asBool(r.featuredMain),
+      coverImage,
     },
   };
 }

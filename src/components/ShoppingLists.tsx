@@ -55,6 +55,7 @@ export default function ShoppingLists({ lists }: Props) {
                         target="_blank"
                         rel="noopener noreferrer sponsored"
                         className="lista-item-link"
+                        aria-label={`Ver ${item.name} na Amazon (abre em nova aba)`}
                       >
                         {safeImg && (
                           <div className="lista-item-img">

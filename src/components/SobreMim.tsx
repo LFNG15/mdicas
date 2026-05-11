@@ -1,21 +1,21 @@
 import Image from "next/image";
 
-export default function Newsletter() {
+export default function SobreMim() {
   return (
-    <section className="sobre-mim" id="contato">
+    <section className="sobre-mim" id="sobre" aria-labelledby="sobre-mim-titulo">
       <div className="sobre-mim-inner">
         <div className="sobre-mim-foto">
           <Image
-            src="/perfilmarinascimento.jpg"
-            alt="Marina Nascimento"
+            src="/perfilmarinascimento.jpeg"
+            alt="Foto de Marina Nascimento, criadora do MD"
             width={340}
-            height={420}
+            height={340}
             className="sobre-mim-img"
           />
         </div>
         <div className="sobre-mim-texto">
           <div className="section-tag">Sobre mim</div>
-          <h2 className="section-title">Te Ajudo</h2>
+          <h2 id="sobre-mim-titulo" className="section-title">Te Ajudo</h2>
           <ul className="sobre-mim-lista">
             <li>A economizar comprando pela internet;</li>
             <li>Avaliar o custo x benefício dos produtos;</li>

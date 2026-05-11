@@ -63,7 +63,7 @@ export default function PoliticaDePrivacidade() {
             <strong>Como Associada da Amazon, ganho comissões com compras qualificadas feitas através dos links presentes neste site, sem nenhum custo adicional para você.</strong> O preço que você paga é exatamente o mesmo, independentemente de usar ou não meu link.
           </P>
           <P>
-            Os links de afiliados são identificados visualmente e marcados com o atributo <code>rel="sponsored"</code> conforme as boas práticas da web. As recomendações feitas neste site refletem minha opinião honesta — só indico produtos em que acredito.
+            Os links de afiliados são identificados visualmente e marcados com o atributo <code>rel=&ldquo;sponsored&rdquo;</code> conforme as boas práticas da web. As recomendações feitas neste site refletem minha opinião honesta — só indico produtos em que acredito.
           </P>
         </Section>
 

@@ -8,6 +8,10 @@ export function notFound(message = "Não encontrado") {
   return NextResponse.json({ error: message }, { status: 404 });
 }
 
+export function conflict(message: string) {
+  return NextResponse.json({ error: message }, { status: 409 });
+}
+
 export function serverError(message = "Erro interno") {
   // Mensagens internas do banco NUNCA são repassadas — apenas logadas no servidor.
   return NextResponse.json({ error: message }, { status: 500 });

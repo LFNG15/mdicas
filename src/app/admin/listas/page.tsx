@@ -161,20 +161,21 @@ export default function AdminListas() {
                 <form onSubmit={handleAddItem}>
                   <div className="admin-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8rem' }}>
                     <div>
-                      <label style={lbl}>Nome do produto <span style={{ color: 'var(--coral)' }}>*</span></label>
-                      <input type="text" placeholder="Ex: Fralda Pampers Pants G" value={itemForm.name}
+                      <label htmlFor={`item-name-${currentList.id}`} style={lbl}>Nome do produto <span style={{ color: 'var(--coral)' }} aria-hidden="true">*</span></label>
+                      <input id={`item-name-${currentList.id}`} type="text" required placeholder="Ex: Fralda Pampers Pants G" value={itemForm.name}
                         onChange={e => setItemForm(f => ({ ...f, name: e.target.value }))} style={inp} />
                     </div>
                     <div style={{ gridColumn: '1 / -1' }}>
-                      <label style={lbl}>Link afiliado Amazon <span style={{ color: 'var(--coral)' }}>*</span></label>
-                      <input type="url" placeholder="https://amzn.to/..." value={itemForm.affiliate_url}
+                      <label htmlFor={`item-url-${currentList.id}`} style={lbl}>Link afiliado Amazon <span style={{ color: 'var(--coral)' }} aria-hidden="true">*</span></label>
+                      <input id={`item-url-${currentList.id}`} type="url" required placeholder="https://amzn.to/..." value={itemForm.affiliate_url}
                         onChange={e => setItemForm(f => ({ ...f, affiliate_url: e.target.value }))} style={inp} />
                     </div>
                     <div style={{ gridColumn: '1 / -1' }}>
-                      <label style={lbl}>URL da imagem (opcional)</label>
-                      <input type="url" placeholder="https://... (link da imagem do produto)" value={itemForm.image_url}
-                        onChange={e => setItemForm(f => ({ ...f, image_url: e.target.value }))} style={inp} />
-                      <div style={{ fontSize: '0.7rem', color: 'var(--text-light)', marginTop: '0.25rem' }}>
+                      <label htmlFor={`item-img-${currentList.id}`} style={lbl}>URL da imagem (opcional)</label>
+                      <input id={`item-img-${currentList.id}`} type="url" placeholder="https://... (link da imagem do produto)" value={itemForm.image_url}
+                        onChange={e => setItemForm(f => ({ ...f, image_url: e.target.value }))} style={inp}
+                        aria-describedby={`item-img-hint-${currentList.id}`} />
+                      <div id={`item-img-hint-${currentList.id}`} style={{ fontSize: '0.7rem', color: 'var(--text-light)', marginTop: '0.25rem' }}>
                         Cole o link da imagem do produto na Amazon ou outro serviço de imagens.
                       </div>
                     </div>

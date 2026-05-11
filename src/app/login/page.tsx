@@ -1,26 +1,39 @@
 "use client";
-import { useState, useTransition } from "react";
+import { useFormState, useFormStatus } from "react-dom";
 import Link from "next/link";
-import { signIn } from "./actions";
+import { signIn, type LoginState } from "./actions";
+
+const initialState: LoginState = {};
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      style={{
+        width: "100%",
+        padding: "0.9rem",
+        background: pending ? "var(--text-light)" : "var(--coral)",
+        color: "var(--white)",
+        border: "none",
+        borderRadius: 60,
+        fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif",
+        fontSize: "0.85rem",
+        fontWeight: 600,
+        letterSpacing: "0.06em",
+        textTransform: "uppercase",
+        cursor: pending ? "not-allowed" : "pointer",
+        transition: "all 0.2s",
+      }}
+    >
+      {pending ? "Entrando..." : "Entrar"}
+    </button>
+  );
+}
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [pending, startTransition] = useTransition();
-  const loading = pending;
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    const fd = new FormData();
-    fd.set("email", email);
-    fd.set("password", password);
-    startTransition(async () => {
-      const res = await signIn(fd);
-      if (res?.error) setError(res.error);
-    });
-  };
+  const [state, formAction] = useFormState(signIn, initialState);
 
   return (
     <div
@@ -93,25 +106,28 @@ export default function Login() {
             Acesse o painel para gerenciar conteúdo.
           </p>
 
-          {error && (
+          {state?.error && (
             <div
+              role="alert"
+              aria-live="polite"
               style={{
                 marginBottom: "1.5rem",
                 padding: "0.85rem 1.1rem",
                 background: "rgba(229,62,62,0.06)",
                 border: "1px solid rgba(229,62,62,0.2)",
                 borderRadius: 10,
-                color: "#c53030",
+                color: "#b22424",
                 fontSize: "0.85rem",
               }}
             >
-              {error}
+              {state.error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit}>
+          <form action={formAction} noValidate>
             <div style={{ marginBottom: "1.2rem" }}>
               <label
+                htmlFor="login-email"
                 style={{
                   display: "block",
                   fontSize: "0.73rem",
@@ -125,11 +141,13 @@ export default function Login() {
                 Email
               </label>
               <input
+                id="login-email"
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                name="email"
                 required
                 autoComplete="email"
+                aria-required="true"
+                inputMode="email"
                 style={{
                   width: "100%",
                   padding: "0.8rem 1rem",
@@ -146,6 +164,7 @@ export default function Login() {
 
             <div style={{ marginBottom: "1.8rem" }}>
               <label
+                htmlFor="login-password"
                 style={{
                   display: "block",
                   fontSize: "0.73rem",
@@ -159,11 +178,12 @@ export default function Login() {
                 Senha
               </label>
               <input
+                id="login-password"
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                name="password"
                 required
                 autoComplete="current-password"
+                aria-required="true"
                 style={{
                   width: "100%",
                   padding: "0.8rem 1rem",
@@ -178,27 +198,7 @@ export default function Login() {
               />
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              style={{
-                width: "100%",
-                padding: "0.9rem",
-                background: loading ? "var(--text-light)" : "var(--coral)",
-                color: "var(--white)",
-                border: "none",
-                borderRadius: 60,
-                fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif",
-                fontSize: "0.85rem",
-                fontWeight: 600,
-                letterSpacing: "0.06em",
-                textTransform: "uppercase",
-                cursor: loading ? "not-allowed" : "pointer",
-                transition: "all 0.2s",
-              }}
-            >
-              {loading ? "Entrando..." : "Entrar"}
-            </button>
+            <SubmitButton />
           </form>
         </div>
 

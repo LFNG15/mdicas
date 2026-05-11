@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Newsletter from "@/components/Newsletter";
+import SobreMim from "@/components/SobreMim";
 import FadeUp from "@/components/FadeUp";
 import { getShoppingLists } from "@/lib/supabase/queries";
 import type { ShoppingListItem } from "@/hooks/useShoppingLists";
@@ -29,6 +29,7 @@ export default async function ListasPage() {
   return (
     <>
       <Navbar />
+      <main id="main" tabIndex={-1}>
 
       {/* Hero */}
       <div className="article-hero">
@@ -111,6 +112,7 @@ export default async function ListasPage() {
                         target="_blank"
                         rel="noopener noreferrer sponsored"
                         className="listas-page-item"
+                        aria-label={`Ver ${item.name} na Amazon (abre em nova aba)`}
                       >
                         <div className="listas-page-item-img">
                           {safeImg
@@ -148,7 +150,8 @@ export default async function ListasPage() {
         )}
       </div>
 
-      <Newsletter />
+      <SobreMim />
+      </main>
       <Footer />
     </>
   );

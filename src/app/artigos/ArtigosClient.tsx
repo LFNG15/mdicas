@@ -1,6 +1,8 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 import FadeUp from "@/components/FadeUp";
 import type { Post } from "@/lib/supabase/types";
 
@@ -12,9 +14,15 @@ interface Props {
 }
 
 export default function ArtigosClient({ posts, categoryCounts }: Props) {
+  const searchParams = useSearchParams();
   const [categoriaAtiva, setCategoriaAtiva] = useState<string | null>(null);
-  const [busca, setBusca] = useState("");
+  const [busca, setBusca] = useState(searchParams?.get("q") ?? "");
   const [ordem, setOrdem] = useState<SortOption>("recentes");
+
+  useEffect(() => {
+    const q = searchParams?.get("q") ?? "";
+    setBusca(q);
+  }, [searchParams]);
 
   const filtered = useMemo(() => {
     let result = posts;
@@ -128,8 +136,9 @@ export default function ArtigosClient({ posts, categoryCounts }: Props) {
           {/* Busca + Ordenação */}
           <div style={{ display: "flex", gap: "0.6rem", alignItems: "center" }}>
             <input
-              type="text"
+              type="search"
               placeholder="Buscar..."
+              aria-label="Buscar artigos por título, autor ou categoria"
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
               style={{
@@ -149,6 +158,7 @@ export default function ArtigosClient({ posts, categoryCounts }: Props) {
                 value={ordem}
                 onChange={(e) => setOrdem(e.target.value as SortOption)}
                 style={selectStyle}
+                aria-label="Ordenar artigos"
               >
                 <option value="recentes">Mais recentes</option>
                 <option value="antigos">Mais antigos</option>
@@ -225,8 +235,19 @@ export default function ArtigosClient({ posts, categoryCounts }: Props) {
               {filtered.map((post, i) => (
                 <FadeUp key={post.slug} delay={(i % 3) * 0.08}>
                   <Link href={`/artigo/${post.slug}`} className="blog-card">
-                    <div className="blog-card-img">
-                      <div className="bg" style={{ background: post.gradient }} />
+                    <div className="blog-card-img" style={!post.coverImage ? { background: post.gradient } : undefined}>
+                      {post.coverImage ? (
+                        <Image
+                          src={post.coverImage}
+                          alt=""
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 400px"
+                          className="bg"
+                          style={{ objectFit: "cover" }}
+                        />
+                      ) : (
+                        <div className="bg" style={{ background: post.gradient }} />
+                      )}
                     </div>
                     <div className="blog-card-body">
                       <span className="tag">{post.tag}</span>

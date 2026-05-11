@@ -4,10 +4,27 @@ import { postToRow, type Post } from "@/lib/supabase/types";
 const TABLE = "posts";
 
 export const PostsRepo = {
-  async upsert(post: Post) {
+  async list() {
     return getServiceClient()
       .from(TABLE)
-      .upsert(postToRow(post), { onConflict: "slug" });
+      .select("*")
+      .order("created_at", { ascending: false });
+  },
+
+  async create(post: Post) {
+    return getServiceClient()
+      .from(TABLE)
+      .insert(postToRow(post))
+      .select()
+      .single();
+  },
+
+  async findBySlug(slug: string) {
+    return getServiceClient()
+      .from(TABLE)
+      .select("id")
+      .eq("slug", slug)
+      .maybeSingle();
   },
 
   async update(id: string, post: Post) {

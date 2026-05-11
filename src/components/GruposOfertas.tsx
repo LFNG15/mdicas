@@ -60,9 +60,10 @@ export default function GruposOfertas({ grupos }: Props) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="grupo-card"
+                aria-label={`Entrar no grupo ${grupo.name} no ${plat.label} (abre em nova aba)`}
                 style={{ '--plat-color': plat.color, '--plat-bg': plat.bg } as React.CSSProperties}
               >
-                <div className="grupo-card-icon" style={{ color: plat.color, background: plat.bg }}>
+                <div className="grupo-card-icon" style={{ color: plat.color, background: plat.bg }} aria-hidden="true">
                   {plat.icon}
                 </div>
                 <div className="grupo-card-body">

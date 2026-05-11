@@ -7,7 +7,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "typecheck": "tsc --noEmit",
+    "lint": "next lint",
+    "lint:a11y": "next lint --dir src --quiet",
+    "test": "node --import tsx --test tests/**/*.test.ts"
   },
   "keywords": [],
   "author": "",
@@ -20,11 +23,18 @@
     "@tiptap/extension-youtube": "^3.22.2",
     "@tiptap/react": "^3.22.2",
     "@tiptap/starter-kit": "^3.22.2",
-    "@types/node": "^25.5.0",
-    "@types/react": "^19.2.14",
     "next": "^14.2.35",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "typescript": "^6.0.2"
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^14.2.35",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
   }
 }

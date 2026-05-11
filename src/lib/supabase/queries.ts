@@ -1,15 +1,9 @@
-import { createClient } from "@supabase/supabase-js";
+import { getPublicClient } from "./public-client";
 import { rowToPost, type Post, type PostRow } from "./types";
 
-function getClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  );
-}
-
 export async function getAllPosts(): Promise<Post[]> {
-  const { data, error } = await getClient()
+  const supabase = getPublicClient();
+  const { data, error } = await supabase
     .from("posts")
     .select("*")
     .order("created_at", { ascending: false });
@@ -18,7 +12,8 @@ export async function getAllPosts(): Promise<Post[]> {
 }
 
 export async function getFeaturedPosts(): Promise<Post[]> {
-  const { data, error } = await getClient()
+  const supabase = getPublicClient();
+  const { data, error } = await supabase
     .from("posts")
     .select("*")
     .eq("featured", true)
@@ -28,7 +23,8 @@ export async function getFeaturedPosts(): Promise<Post[]> {
 }
 
 export async function getBlogPosts(): Promise<Post[]> {
-  const { data, error } = await getClient()
+  const supabase = getPublicClient();
+  const { data, error } = await supabase
     .from("posts")
     .select("*")
     .eq("featured_main", false)
@@ -39,7 +35,8 @@ export async function getBlogPosts(): Promise<Post[]> {
 }
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {
-  const { data, error } = await getClient()
+  const supabase = getPublicClient();
+  const { data, error } = await supabase
     .from("posts")
     .select("*")
     .eq("slug", slug)
@@ -49,15 +46,15 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
 }
 
 export async function getAllSlugs(): Promise<{ slug: string }[]> {
-  const { data, error } = await getClient()
-    .from("posts")
-    .select("slug");
+  const supabase = getPublicClient();
+  const { data, error } = await supabase.from("posts").select("slug");
   if (error) throw new Error(error.message);
   return data as { slug: string }[];
 }
 
 export async function getTotalPostCount(): Promise<number> {
-  const { count, error } = await getClient()
+  const supabase = getPublicClient();
+  const { count, error } = await supabase
     .from("posts")
     .select("*", { count: "exact", head: true });
   if (error) return 0;
@@ -65,26 +62,29 @@ export async function getTotalPostCount(): Promise<number> {
 }
 
 export async function getShoppingLists() {
-  const { data, error } = await getClient()
-    .from('shopping_lists')
-    .select('*, items:shopping_list_items(*)')
-    .order('created_at', { ascending: false });
+  const supabase = getPublicClient();
+  const { data, error } = await supabase
+    .from("shopping_lists")
+    .select("*, items:shopping_list_items(*)")
+    .order("created_at", { ascending: false });
   if (error) return [];
   return data as any[];
 }
 
 export async function getGruposOfertas(): Promise<{ id: string; platform: string; name: string; url: string }[]> {
-  const { data, error } = await getClient()
-    .from('grupos_ofertas')
-    .select('id, platform, name, url')
-    .eq('active', true)
-    .order('created_at', { ascending: false });
+  const supabase = getPublicClient();
+  const { data, error } = await supabase
+    .from("grupos_ofertas")
+    .select("id, platform, name, url")
+    .eq("active", true)
+    .order("created_at", { ascending: false });
   if (error) return [];
   return data as any[];
 }
 
 export async function getInstagramPosts(): Promise<{ id: string; url: string; image_url: string; caption: string; created_at: string }[]> {
-  const { data, error } = await getClient()
+  const supabase = getPublicClient();
+  const { data, error } = await supabase
     .from("instagram_posts")
     .select("*")
     .order("created_at", { ascending: false })
@@ -94,7 +94,8 @@ export async function getInstagramPosts(): Promise<{ id: string; url: string; im
 }
 
 export async function getPostsByCategory(category: string): Promise<Post[]> {
-  const { data, error } = await getClient()
+  const supabase = getPublicClient();
+  const { data, error } = await supabase
     .from("posts")
     .select("*")
     .eq("category", category)
@@ -104,7 +105,8 @@ export async function getPostsByCategory(category: string): Promise<Post[]> {
 }
 
 export async function getDistinctCategories(): Promise<string[]> {
-  const { data, error } = await getClient().from("posts").select("category");
+  const supabase = getPublicClient();
+  const { data, error } = await supabase.from("posts").select("category");
   if (error) return [];
   const set = new Set<string>();
   for (const row of data as { category: string }[]) {
@@ -114,9 +116,8 @@ export async function getDistinctCategories(): Promise<string[]> {
 }
 
 export async function getCategoryCounts(): Promise<{ name: string; count: number }[]> {
-  const { data, error } = await getClient()
-    .from("posts")
-    .select("category");
+  const supabase = getPublicClient();
+  const { data, error } = await supabase.from("posts").select("category");
   if (error) return [];
 
   const counts: Record<string, number> = {};

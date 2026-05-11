@@ -1,9 +1,10 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Newsletter from "@/components/Newsletter";
+import SobreMim from "@/components/SobreMim";
 import FadeUp from "@/components/FadeUp";
 import {
   getDistinctCategories,
@@ -68,6 +69,7 @@ export default async function CategoriaPage({ params }: { params: { slug: string
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <Navbar />
+      <main id="main" tabIndex={-1}>
 
       <div className="article-hero">
         <div className="article-hero-inner">
@@ -93,8 +95,19 @@ export default async function CategoriaPage({ params }: { params: { slug: string
             {posts.map((post, i) => (
               <FadeUp key={post.slug} delay={i * 0.05}>
                 <Link href={`/artigo/${post.slug}`} className="blog-card">
-                  <div className="blog-card-img">
-                    <div className="bg" style={{ background: post.gradient }} />
+                  <div className="blog-card-img" style={!post.coverImage ? { background: post.gradient } : undefined}>
+                    {post.coverImage ? (
+                      <Image
+                        src={post.coverImage}
+                        alt=""
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1280px) 33vw, 400px"
+                        className="bg"
+                        style={{ objectFit: "cover" }}
+                      />
+                    ) : (
+                      <div className="bg" style={{ background: post.gradient }} />
+                    )}
                   </div>
                   <div className="blog-card-body">
                     <span className="tag">{post.tag}</span>
@@ -112,7 +125,8 @@ export default async function CategoriaPage({ params }: { params: { slug: string
         )}
       </section>
 
-      <Newsletter />
+      <SobreMim />
+      </main>
       <Footer />
     </>
   );
