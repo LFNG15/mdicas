@@ -38,7 +38,19 @@ export const metadata: Metadata = {
   applicationName: SITE.name,
   authors: [{ name: SITE.name }],
   generator: "Next.js",
-  keywords: ["blog", "artigos", "dicas", "compras", "lifestyle"],
+  keywords: [
+    "ofertas",
+    "achados",
+    "Amazon",
+    "afiliados",
+    "promoções",
+    "listas de compra",
+    "grupos de ofertas",
+    "WhatsApp",
+    "Telegram",
+    "economia",
+    "compras inteligentes",
+  ],
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
@@ -47,13 +59,13 @@ export const metadata: Metadata = {
     siteName: SITE.name,
     title: SITE.fullName,
     description: SITE.description,
-    images: [{ url: SITE.ogImage, width: 1200, height: 630, alt: SITE.name }],
+    // imagem fornecida automaticamente por src/app/opengraph-image.tsx (1200×630)
   },
   twitter: {
     card: "summary_large_image",
     title: SITE.fullName,
     description: SITE.description,
-    images: [SITE.ogImage],
+    // imagem fornecida automaticamente por src/app/twitter-image.tsx
   },
   robots: {
     index: true,
@@ -111,7 +123,7 @@ export default function RootLayout({
     "@type": "Organization",
     name: SITE.name,
     url: SITE.url,
-    logo: `${SITE.url}${SITE.ogImage}`,
+    logo: `${SITE.url}${SITE.logo}`,
   };
 
   return (

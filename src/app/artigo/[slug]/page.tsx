@@ -23,7 +23,12 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 
   const url = `/artigo/${post.slug}`;
   const publishedTime = /^\d{4}-\d{2}-\d{2}/.test(post.date) ? post.date : undefined;
-  const ogImage = post.coverImage || SITE.ogImage;
+
+  // Quando há imagem de capa, ela vira o OG do artigo.
+  // Sem capa, deixamos o Next usar opengraph-image.tsx do root (marca M|D).
+  const customImage = post.coverImage
+    ? [{ url: post.coverImage, width: 1600, height: 900, alt: post.title }]
+    : undefined;
 
   return {
     title: post.title,
@@ -39,13 +44,13 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       publishedTime,
       authors: [post.author],
       tags: [post.category, post.tag].filter(Boolean),
-      images: [{ url: ogImage, width: 1200, height: 630, alt: post.title }],
+      ...(customImage ? { images: customImage } : {}),
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.excerpt,
-      images: [ogImage],
+      ...(post.coverImage ? { images: [post.coverImage] } : {}),
     },
   };
 }
@@ -76,7 +81,7 @@ export default async function ArtigoPage({ params }: { params: { slug: string } 
     publisher: {
       "@type": "Organization",
       name: SITE.name,
-      logo: { "@type": "ImageObject", url: `${SITE.url}${SITE.ogImage}` },
+      logo: { "@type": "ImageObject", url: `${SITE.url}${SITE.logo}` },
     },
     datePublished,
     dateModified: datePublished,

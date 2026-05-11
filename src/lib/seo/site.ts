@@ -1,13 +1,16 @@
 export const SITE = {
   name: "MD",
-  fullName: "MD | Artigos, Blog & Dicas",
+  fullName: "MD | Ofertas, Listas e Achados",
   description:
-    "Seu espaço editorial de artigos envolventes, dicas inteligentes de compras e conteúdos que transformam a forma como você vê o mundo.",
+    "Curadoria de produtos com o melhor custo-benefício, ofertas exclusivas em grupos de WhatsApp e Telegram, e dicas práticas para você comprar bem pagando pouco.",
   locale: "pt_BR",
   language: "pt-BR",
   url: process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://md-blog.vercel.app",
   themeColor: "#F07B6E",
   background: "#FAF3EF",
-  ogImage: "/logo-light.jpg",
+  // OG card 1200×630 gerado dinamicamente em /opengraph-image (next/og).
+  ogImage: "/opengraph-image",
+  // Logo quadrado para schema.org Organization (Rich Results / Knowledge Panel).
+  logo: "/logo-light.jpg",
   twitter: "@",
 } as const;
